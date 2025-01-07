@@ -425,6 +425,7 @@ class Game:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('UR')
                     if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_left_neighbor[1]].is_blocking:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('DR')
+
     def wall_overlap_detection(self,x,y,direction):
         if x>1 and self.table.table[x-2][y].direction == direction and direction == 'V':
             return True
@@ -434,5 +435,30 @@ class Game:
             return True
         if y<15 and self.table.table[x][y+2].direction == direction and direction == 'H':
             return True
+        return False 
+
+    def dfs(self,player,visited):
+        visited[(player.pos_x,player.pos_y)] = True
+        if player.pos_x == player.target_row:
+            return True
+        for move in self.table.table[player.pos_x][player.pos_y].neighbors.keys():
+            if self.table.table[player.pos_x][player.pos_y].neighbors[move] and not visited[(player.pos_x+self.moves[move][0],player.pos_y+self.moves[move][1])]:
+                game_copy = copy.deepcopy(self)
+                player_copy = copy.deepcopy(player)
+                for direction in ['U','R','D','L']:
+                    game_copy.update_neighbors_ball_elimination(player_copy.pos_x,player_copy.pos_y,direction)
+                    game_copy.update_position_ball_elimination(player_copy.pos_x,player_copy.pos_y,direction)
+                game_copy.table.table[player_copy.pos_x][player_copy.pos_y].moving_ball_from()
+                player_copy.change_pos(self.moves[move][0],self.moves[move][1])
+                for direction in ['U','R','D','L']:
+                    game_copy.update_neighbors_ball_addition(player_copy.pos_x,player_copy.pos_y,direction)
+                    game_copy.update_position_ball_addition(player_copy.pos_x,player_copy.pos_y,direction)
+                self.table.table[player_copy.pos_x][player_copy.pos_y].moving_ball_to(player_copy.color)    
+                if game_copy.dfs(player_copy,visited):
+                    del game_copy
+                    del player_copy
+                    return True
+                del game_copy
+                del player_copy
         return False 
 
