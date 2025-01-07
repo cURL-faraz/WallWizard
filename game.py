@@ -72,3 +72,9 @@ class Table:
                 else:
                     self.table[i][j] = Center()
         self.centers = set([(x,y) for x in range(1,16,2) for y in range(1,16,2)])
+    
+    def print_table(self):
+        for i in range(17):
+            for j in range(17):
+                print(f"[{self.table[i][j].color}]{self.table[i][j].char}[/{self.table[i][j].color}]",end=" ")
+            print()
