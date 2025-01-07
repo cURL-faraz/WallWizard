@@ -511,4 +511,80 @@ class Game:
             else:
                 print("[bold red1]oops ! invalid numbers are entered .[/bold red1]")
                 return self.put_valid_wall(player)
+            
+    def play(self):
+        self.clear_terminal(1.5)
+
+        if self.time == 0:
+            self.complete_primary_table() 
+        
+        if self.turn == 0:
+            player = self.first_player 
+        else :
+            player = self.second_player
+
+        print(f"[bold green]{player.name} please choose one of the options below ![/bold green]")
+        if player.num_wall != 0 and self.is_putting_wall_possilble:
+            player.num_wall_per_turn = 128
+            print("[bold green]M : move\tW : wall\tQ : quit[/bold green]")
+        else:
+            print("[bold green]M : move\tQ : quit[/bold green]")
+
+        print(f"[bold blue]number of your remaining walls : {player.num_wall}[/bold blue]")
+        request=input()
+        
+        if request == "M":
+            move = self.valid_moves(player , player.pos_x , player.pos_y)
+            for direction in ['U','R','D','L']:
+                self.update_neighbors_ball_elimination(player.pos_x,player.pos_y,direction)
+                self.update_position_ball_elimination(player.pos_x,player.pos_y,direction)
+            self.table.table[player.pos_x][player.pos_y].moving_ball_from()
+            player.change_pos(self.moves[move][0],self.moves[move][1])
+            for direction in ['U','R','D','L']:
+                self.update_neighbors_ball_addition(player.pos_x,player.pos_y,direction)
+                self.update_position_ball_addition(player.pos_x,player.pos_y,direction)
+            self.table.table[player.pos_x][player.pos_y].moving_ball_to(player.color)
+            self.clear_terminal(1)
+            self.table.print_table()
+            if self.is_terminated(player):
+                self.is_finished = True 
+                self.clear_terminal(1.5)
+                return "T"
+            else:
+                self.turn ^= 1
+                self.time +=1 
+                return "S"
+
+        elif request == "W" and player.num_wall != 0 and self.is_putting_wall_possilble:
+            center_x,center_y,direction =  self.put_valid_wall(player)
+            if center_x == -1:
+                self.is_putting_wall_possilble = False 
+                return self.play()
+            else:
+                player.num_wall -= 1
+                if direction == 'H':
+                    self.update_entries_wall_addition(center_x,center_y-1,'H')
+                    self.update_entries_wall_addition(center_x,center_y+1,'H')
+                else:
+                    self.update_entries_wall_addition(center_x-1,center_y,'V')
+                    self.update_entries_wall_addition(center_x+1,center_y,'V')
+                self.table.table[center_x][center_y].center_activation(direction)
+                if direction == 'H':
+                    self.table.table[center_x][center_y-1].wall_activation()
+                    self.table.table[center_x][center_y+1].wall_activation()
+                else:
+                    self.table.table[center_x-1][center_y].wall_activation()
+                    self.table.table[center_x+1][center_y].wall_activation()
+                self.table.print_table()
+                self.turn ^=1 
+                self.time +=1
+                return "S"
+
+        elif request == "Q":
+            print("[bold red1]exiting the game ![/bold red1]")
+            self.clear_terminal(1.5)
+            return "Q"
+        else:
+            print(f"[bold red1]sorry {player.name} , your choice doesn't match any of the given options ![/bold red1]")
+            return self.play()
 
