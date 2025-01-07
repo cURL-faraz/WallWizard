@@ -25,3 +25,27 @@ class Center:
         self.is_activated = True
         self.color = "bold bright_yellow"
         self.direction = direction
+
+class Entry:
+    def __init__(self):
+        self.containing_ball = False 
+        self.char = ' '
+        self.color = "unknown"
+        self.neighbors = {'U': True , 'R' : True , 'D' : True , 'L' : True , 'UU' : False , 'RR' : False , 'DD' : False , 'LL' : False ,
+        'UL' : False , 'UR' : False , 'DR' : False , 'DL' : False }
+    
+    def moving_ball_to(self,player_color):
+        self.containing_ball = True
+        self.char = 'O'
+        self.color = player_color
+    
+    def moving_ball_from(self):
+        self.containing_ball = False 
+        self.char = ' '
+        self.color = "unknown"
+    
+    def add_limit(self,key):
+        self.neighbors[key] = False 
+    
+    def del_limit(self,key):
+        self.neighbors[key] = True
