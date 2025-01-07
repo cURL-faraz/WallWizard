@@ -105,3 +105,7 @@ class Game:
         self.moves = {'U' : (-2,0) , 'R' : (0,2) , 'D' : (2,0) , 'L' : (0,-2) , 'UU' : (-4,0) , 'RR' : (0,4) , 
         'DD' : (4,0) , 'LL' : (0,-4) , 'UL' : (-2,-2) , 'UR' : (-2,2) , 'DR' : (2,2) , 'DL' : (2,-2)}
         self.is_putting_wall_possilble = True
+    
+    def clear_terminal(self,time):
+        sleep(time)
+        os.system('clear')
