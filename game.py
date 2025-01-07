@@ -126,3 +126,10 @@ class Game:
         else:
             print("[bold red1]oops ! invalid move is chosen .[/bold red1]")
             return self.valid_moves(player,x,y)
+        
+    def is_terminated(self,player):
+        if player.pos_x == player.target_row:
+            print(f"[bold green]{player.name} won the game ![/bold green]")
+            return True
+        else:
+            return False 
