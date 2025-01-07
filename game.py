@@ -14,3 +14,14 @@ class Wall:
     def wall_activation(self):
         self.is_blocking = True
         self.color = "bold bright_yellow"
+
+class Center:
+    def __init__(self):
+        self.is_activated = False 
+        self.char = "o"
+        self.direction = None
+        self.color = "bold bright_white"
+    def center_activation(self,direction):
+        self.is_activated = True
+        self.color = "bold bright_yellow"
+        self.direction = direction
