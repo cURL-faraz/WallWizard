@@ -92,3 +92,16 @@ class Player:
     def change_pos(self,delta_x,delta_y):
         self.pos_x += delta_x
         self.pos_y += delta_y
+
+class Game:
+    def __init__(self,game_id,user_1,user_2):
+        self.id=game_id
+        self.table = Table() 
+        self.is_finished = False
+        self.first_player = Player(user_1,0,8,16,"bold magenta")
+        self.second_player = Player(user_2,16,8,0,"bold bright_cyan")
+        self.turn = 0 
+        self.time = 0
+        self.moves = {'U' : (-2,0) , 'R' : (0,2) , 'D' : (2,0) , 'L' : (0,-2) , 'UU' : (-4,0) , 'RR' : (0,4) , 
+        'DD' : (4,0) , 'LL' : (0,-4) , 'UL' : (-2,-2) , 'UR' : (-2,2) , 'DR' : (2,2) , 'DL' : (2,-2)}
+        self.is_putting_wall_possilble = True
