@@ -78,3 +78,17 @@ class Table:
             for j in range(17):
                 print(f"[{self.table[i][j].color}]{self.table[i][j].char}[/{self.table[i][j].color}]",end=" ")
             print()
+
+class Player:
+    def __init__(self,user_name,x,y,row,player_color):
+        self.name = user_name 
+        self.pos_x = x 
+        self.pos_y = y
+        self.target_row = row 
+        self.color = player_color
+        self.num_wall = 10 
+        self.num_wall_per_turn = 128
+        
+    def change_pos(self,delta_x,delta_y):
+        self.pos_x += delta_x
+        self.pos_y += delta_y
