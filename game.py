@@ -353,3 +353,9 @@ class Game:
                                 self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].del_limit('D'+opposite_direction)
                         else:
                             self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].del_limit(opposite_direction*2)
+    def complete_primary_table(self):
+        self.table.table[0][8].moving_ball_to(self.first_player.color)
+        self.table.table[16][8].moving_ball_to(self.second_player.color)
+        for direction in ['U','R','D','L']:
+            self.update_neighbors_ball_addition(0,8,direction)
+            self.update_neighbors_ball_addition(16,8,direction)
