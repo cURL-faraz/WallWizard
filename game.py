@@ -49,3 +49,26 @@ class Entry:
     
     def del_limit(self,key):
         self.neighbors[key] = True
+
+class Table:
+    def __init__(self):
+        self.table=[["" for _ in range(17)] for _ in range(17)] 
+        for i in range(17):
+            for j in range(17):
+                if i%2 == 0 and j%2 == 0 :
+                    self.table[i][j]=Entry()
+                    if i == 0:
+                        self.table[i][j].add_limit('U')
+                    elif i == 16:
+                        self.table[i][j].add_limit('D')
+                    if j == 0 :
+                        self.table[i][j].add_limit('L')
+                    elif j == 16:
+                        self.table[i][j].add_limit('R')
+                elif i%2 == 0 and j%2 != 0:
+                    self.table[i][j] = Wall('V')
+                elif i%2 != 0 and j%2 == 0:
+                    self.table[i][j] = Wall('H')
+                else:
+                    self.table[i][j] = Center()
+        self.centers = set([(x,y) for x in range(1,16,2) for y in range(1,16,2)])
