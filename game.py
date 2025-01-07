@@ -462,3 +462,53 @@ class Game:
                 del player_copy
         return False 
 
+    def put_valid_wall(self,player):
+        if player.num_wall_per_turn == 0:
+            return -1,-1,-1
+        else:
+            self.clear_terminal(1)
+            self.table.print_table()
+            print(f"[bold green]{player.name} please enter a pair of positive odd numbers less equal 15 as the coordinate of a center ![bold blue] (example : x y)[/bold blue][/bold green]") 
+            try:
+                x,y = [int(x) for x in input().split()]
+            except:
+                print("[bold red1]oops ! the format of input is invalid ![/bold red1]")
+                return self.put_valid_wall(player)
+            if (x,y) in self.table.centers:
+                if self.table.table[x][y].is_activated:
+                    print("[bold red1]oops ! overlapping walls .[/bold red1]")
+                    player.num_wall_per_turn -= 1
+                    return self.put_valid_wall(player)
+                else:
+                    print(f"[bold green]{player.name} please choose one of the directions below for your wall .[/bold green]")
+                    print("[bold green]H : horizontal\tV : vertical[/bold green]")
+                    direction = input()
+                    if not direction in ['H','V']:
+                        print("[bold red1]oops ! invalid direction is given .[/bold red1]")
+                        return self.play_valid_wall(player)
+                    else:
+                        if self.wall_overlap_detection(x,y,direction):
+                            print("[bold red1]oops ! overlapping walls .[/bold red1]")
+                            player.num_wall_per_turn -= 1
+                            return self.put_valid_wall(player)
+                        else:
+                            visited = dict([((x,y),False) for x in range(0,17,2) for y in range(0,17,2)]) 
+                            game_copy = copy.deepcopy(self)
+                            if direction == 'H':
+                                game_copy.update_entries_wall_addition(x,y-1,'H')
+                                game_copy.update_entries_wall_addition(x,y+1,'H')
+                            else:
+                                game_copy.update_entries_wall_addition(x-1,y,'V')
+                                game_copy.update_entries_wall_addition(x+1,y,'V')
+                            if game_copy.dfs(game_copy.first_player,visited.copy()) and game_copy.dfs(game_copy.second_player,visited.copy()):
+                                del game_copy
+                                del visited
+                                return x,y,direction
+                            else:
+                                print("[bold red1]oops ! your choice blocked all the possible paths .[/bold red1]")
+                                player.num_wall_per_turn -= 1
+                                return self.put_valid_wall(player)
+            else:
+                print("[bold red1]oops ! invalid numbers are entered .[/bold red1]")
+                return self.put_valid_wall(player)
+
