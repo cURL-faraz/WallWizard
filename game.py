@@ -425,4 +425,14 @@ class Game:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('UR')
                     if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_left_neighbor[1]].is_blocking:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('DR')
+    def wall_overlap_detection(self,x,y,direction):
+        if x>1 and self.table.table[x-2][y].direction == direction and direction == 'V':
+            return True
+        if x<15 and self.table.table[x+2][y].direction == direction and direction == 'V':
+            return True
+        if y>1 and self.table.table[x][y-2].direction == direction and direction == 'H':
+            return True
+        if y<15 and self.table.table[x][y+2].direction == direction and direction == 'H':
+            return True
+        return False 
 
