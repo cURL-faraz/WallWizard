@@ -133,3 +133,53 @@ class Game:
             return True
         else:
             return False 
+
+    def update_position_ball_elimination(self,current_x,current_y,direction):
+        lower_bound = 0 
+        upper_bound = 16
+        up_wall = (-1,0)
+        down_wall = (1,0)
+        right_wall = (0,1)
+        left_wall = (0,-1)
+        if direction in set(['U','D']):
+            if direction == 'U':
+                up_neighbor = (-2,0)
+                if current_x > lower_bound and not self.table.table[current_x+up_wall[0]][current_y].is_blocking and self.table.table[current_x+up_neighbor[0]][current_y+up_neighbor[1]].containing_ball:
+                    if current_x+up_neighbor[0] == lower_bound or self.table.table[current_x+up_neighbor[0]+up_wall[0]][current_y].is_blocking:
+                        if current_y < upper_bound and not self.table.table[current_x+up_neighbor[0]][current_y+right_wall[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit(direction+'R')
+                        if current_y > lower_bound and not self.table.table[current_x+up_neighbor[0]][current_y+left_wall[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit(direction+'L') 
+                    else:
+                        self.table.table[current_x][current_y].add_limit(direction*2)
+            else:
+                down_neighbor = (2,0) 
+                if current_x < upper_bound and not self.table.table[current_x+down_wall[0]][current_y].is_blocking and self.table.table[current_x+down_neighbor[0]][current_y+down_neighbor[1]].containing_ball:
+                    if current_x+down_neighbor[0] == upper_bound or self.table.table[current_x+down_neighbor[0]+down_wall[0]][current_y].is_blocking:
+                        if current_y < upper_bound and not self.table.table[current_x+down_neighbor[0]][current_y+right_wall[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit(direction+'R')
+                        if current_y > lower_bound and not self.table.table[current_x+down_neighbor[0]][current_y+left_wall[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit(direction+'L') 
+                    else:
+                        self.table.table[current_x][current_y].add_limit(direction*2)
+        else:
+            if direction == 'R':
+                right_neighbor = (0,2)
+                if current_y < upper_bound and not self.table.table[current_x][current_y+right_wall[1]].is_blocking and self.table.table[current_x+right_neighbor[0]][current_y+right_neighbor[1]].containing_ball:
+                    if current_y+right_neighbor[1] == upper_bound or self.table.table[current_x][current_y+right_neighbor[1]+right_wall[1]].is_blocking:
+                        if current_x > lower_bound and not self.table.table[current_x+up_wall[0]][current_y+right_neighbor[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit('U'+direction)
+                        if current_x < upper_bound and not self.table.table[current_x+down_wall[0]][current_y+right_neighbor[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit('D'+direction) 
+                    else:
+                        self.table.table[current_x][current_y].add_limit(direction*2)
+            else:
+                left_neighbor = (0,-2)
+                if current_y > lower_bound and not self.table.table[current_x][current_y+left_wall[1]].is_blocking and self.table.table[current_x+left_neighbor[0]][current_y+left_neighbor[1]].containing_ball:
+                    if current_y+left_neighbor[1] == lower_bound or self.table.table[current_x][current_y+left_neighbor[1]+left_wall[1]]:
+                        if current_x > lower_bound and not self.table.table[current_x+up_wall[0]][current_y+left_neighbor[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit('U'+direction)
+                        if current_x < upper_bound and not self.table.table[current_x+down_wall[0]][current_y+left_neighbor[1]].is_blocking:
+                            self.table.table[current_x][current_y].add_limit('D'+direction)
+                    else:
+                        self.table.table[current_x][current_y].add_limit(direction*2)
