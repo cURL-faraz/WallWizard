@@ -588,3 +588,10 @@ class Game:
             print(f"[bold red1]sorry {player.name} , your choice doesn't match any of the given options ![/bold red1]")
             return self.play()
 
+
+game=Game(1,"player_1","player_2")
+exit_code = ""
+while exit_code not in ["T","Q"]:
+    exit_code = game.play()
+
+
