@@ -485,7 +485,7 @@ class Game:
                     direction = input()
                     if not direction in ['H','V']:
                         print("[bold red1]oops ! invalid direction is given .[/bold red1]")
-                        return self.play_valid_wall(player)
+                        return self.put_valid_wall(player)
                     else:
                         if self.wall_overlap_detection(x,y,direction):
                             print("[bold red1]oops ! overlapping walls .[/bold red1]")
