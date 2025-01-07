@@ -109,3 +109,20 @@ class Game:
     def clear_terminal(self,time):
         sleep(time)
         os.system('clear')
+
+    def valid_moves(self,player,x,y):
+        self.clear_terminal(1)
+        self.table.print_table()
+        print(f"[bold green]{player.name} please choose one of the valid moves below ![/bold green]")
+        valid_moves=[]
+        for move in self.table.table[x][y].neighbors.keys():
+            if self.table.table[x][y].neighbors[move]:
+                valid_moves.append(move)
+                print(f"[bold green]{move}[/bold green]",end=" ")
+        print()
+        move = input()
+        if move in valid_moves:
+            return move
+        else:
+            print("[bold red1]oops ! invalid move is chosen .[/bold red1]")
+            return self.valid_moves(player,x,y)
