@@ -243,3 +243,53 @@ class Game:
                                 self.table.table[current_x+left_neighbor[0]][current_y+left_neighbor[1]].add_limit('D'+opposite_direction)
                         else:
                             self.table.table[current_x+left_neighbor[0]][current_y+left_neighbor[1]].add_limit(opposite_direction*2)  
+
+    def update_position_ball_addition(self,new_x,new_y,direction):
+        lower_bound = 0 
+        upper_bound = 16
+        up_wall = (-1,0)
+        down_wall = (1,0)
+        right_wall = (0,1)
+        left_wall = (0,-1)
+        if direction in set(['U','D']):
+            if direction == 'U':
+                up_neighbor = (-2,0)
+                if new_x > lower_bound and not self.table.table[new_x+up_wall[0]][new_y].is_blocking and self.table.table[new_x+up_neighbor[0]][new_y+up_neighbor[1]].containing_ball:
+                    if new_x+up_neighbor[0] == lower_bound or self.table.table[new_x+up_neighbor[0]+up_wall[0]][new_y].is_blocking:
+                        if new_y < upper_bound and not self.table.table[new_x+up_neighbor[0]][new_y+right_wall[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit(direction+'R')
+                        if new_y > lower_bound and not self.table.table[new_x+up_neighbor[0]][new_y+left_wall[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit(direction+'L') 
+                    else:
+                        self.table.table[new_x][new_y].del_limit(direction*2)
+            else:
+                down_neighbor = (2,0) 
+                if new_x < upper_bound and not self.table.table[new_x+down_wall[0]][new_y].is_blocking and self.table.table[new_x+down_neighbor[0]][new_y+down_neighbor[1]].containing_ball:
+                    if new_x+down_neighbor[0] == upper_bound or self.table.table[new_x+down_neighbor[0]+down_wall[0]][new_y].is_blocking:
+                        if new_y < upper_bound and not self.table.table[new_x+down_neighbor[0]][new_y+right_wall[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit(direction+'R')
+                        if new_y > lower_bound and not self.table.table[new_x+down_neighbor[0]][new_y+left_wall[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit(direction+'L') 
+                    else:
+                        self.table.table[new_x][new_y].del_limit(direction*2)
+        else:
+            if direction == 'R':
+                right_neighbor = (0,2)
+                if new_y < upper_bound and not self.table.table[new_x][new_y+right_wall[1]].is_blocking and self.table.table[new_x+right_neighbor[0]][new_y+right_neighbor[1]].containing_ball:
+                    if new_y+right_neighbor[1] == upper_bound or self.table.table[new_x][new_y+right_neighbor[1]+right_wall[1]].is_blocking:
+                        if new_x > lower_bound and not self.table.table[new_x+up_wall[0]][new_y+right_neighbor[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit('U'+direction)
+                        if new_x < upper_bound and not self.table.table[new_x+down_wall[0]][new_y+right_neighbor[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit('D'+direction) 
+                    else:
+                        self.table.table[new_x][new_y].del_limit(direction*2)
+            else:
+                left_neighbor = (0,-2)
+                if new_y > lower_bound and not self.table.table[new_x][new_y+left_wall[1]].is_blocking and self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].containing_ball:
+                    if new_y+left_neighbor[1] == lower_bound or self.table.table[new_x][new_y+left_neighbor[1]+left_wall[1]]:
+                        if new_x > lower_bound and not self.table.table[new_x+up_wall[0]][new_y+left_neighbor[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit('U'+direction)
+                        if new_x < upper_bound and not self.table.table[new_x+down_wall[0]][new_y+left_neighbor[1]].is_blocking:
+                            self.table.table[new_x][new_y].del_limit('D'+direction)
+                    else:
+                        self.table.table[new_x][new_y].del_limit(direction*2)
