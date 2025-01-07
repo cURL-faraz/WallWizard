@@ -353,9 +353,76 @@ class Game:
                                 self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].del_limit('D'+opposite_direction)
                         else:
                             self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].del_limit(opposite_direction*2)
+
     def complete_primary_table(self):
         self.table.table[0][8].moving_ball_to(self.first_player.color)
         self.table.table[16][8].moving_ball_to(self.second_player.color)
         for direction in ['U','R','D','L']:
             self.update_neighbors_ball_addition(0,8,direction)
             self.update_neighbors_ball_addition(16,8,direction)
+
+    def update_entries_wall_addition(self,wall_x,wall_y,direction):
+        lower_bound = 0
+        upper_bound = 16
+        up_wall = (-1,0)
+        down_wall = (1,0)
+        right_wall = (0,1)
+        left_wall = (0,-1)
+        if direction == 'H':
+            first_up_neighbor = (-1,0)
+            second_up_neighbor = (-3,0)
+            first_down_neighbor = (1,0)
+            second_down_neighbor = (3,0)
+            
+            for move in self.table.table[wall_x+first_up_neighbor[0]][wall_y].neighbors.keys():
+                if 'D' in move:
+                    self.table.table[wall_x+first_up_neighbor[0]][wall_y].add_limit(move) 
+            
+            for move in self.table.table[wall_x+first_down_neighbor[0]][wall_y].neighbors.keys():
+                if 'U' in move:
+                    self.table.table[wall_x+first_down_neighbor[0]][wall_y].add_limit(move)
+
+            if self.table.table[wall_x+first_up_neighbor[0]][wall_y].containing_ball:
+                if wall_x+first_up_neighbor[0] > lower_bound and not self.table.table[wall_x+first_up_neighbor[0]+up_wall[0]][wall_y].is_blocking and  self.table.table[wall_x+second_up_neighbor[0]][wall_y].containing_ball:
+                    self.table.table[wall_x+second_up_neighbor[0]][wall_y].add_limit('DD')
+                    if wall_y < upper_bound and not self.table.table[wall_x+first_up_neighbor[0]][wall_y+right_wall[1]].is_blocking:
+                        self.table.table[wall_x+second_up_neighbor[0]][wall_y].del_limit('DR')
+                    if wall_y > lower_bound and not self.table.table[wall_x+first_up_neighbor[0]][wall_y+left_wall[1]].is_blocking:
+                        self.table.table[wall_x+second_up_neighbor[0]][wall_y].del_limit('DL:')
+            
+            if self.table.table[wall_x+first_down_neighbor[0]][wall_y].containing_ball:
+                if wall_x+first_down_neighbor[0] < upper_bound and not self.table.table[wall_x+first_down_neighbor[0]+down_wall[0]][wall_y].is_blocking and self.table.table[wall_x+second_down_neighbor[0]][wall_y].containing_ball:
+                    self.table.table[wall_x+second_down_neighbor[0]][wall_y].add_limit('UU')
+                    if wall_y < upper_bound and not self.table.table[wall_x+first_down_neighbor[0]][wall_y+right_wall[1]].is_blocking:
+                        self.table.table[wall_x+second_down_neighbor[0]][wall_y].del_limit('UR')
+                    if wall_y > lower_bound and not self.table.table[wall_x+first_down_neighbor[0]][wall_y+left_wall[1]].is_blocking:
+                        self.table.table[wall_x+second_down_neighbor[0]][wall_y].del_limit('UL')
+        else:
+            first_right_neighbor = (0,1)
+            second_right_neighbor = (0,3)
+            first_left_neighbor = (0,-1)
+            second_left_neighbor = (0,-3)
+            for move in self.table.table[wall_x][wall_y+first_right_neighbor[1]].neighbors.keys():
+                if 'L' in move:
+                    self.table.table[wall_x][wall_y+first_right_neighbor[1]].add_limit(move)
+            
+            for move in self.table.table[wall_x][wall_y+first_left_neighbor[1]].neighbors.keys():
+                if 'R' in move:
+                    self.table.table[wall_x][wall_y+first_left_neighbor[1]].add_limit(move)
+
+            if self.table.table[wall_x][wall_y+first_right_neighbor[1]].containing_ball:
+                if wall_y + first_right_neighbor[1] < upper_bound and not self.table.table[wall_x][wall_y+first_right_neighbor[1]+right_wall[1]].is_blocking and self.table.table[wall_x][wall_y+second_right_neighbor[1]].containing_ball:
+                    self.table.table[wall_x][wall_y+second_right_neighbor[1]].add_limit('LL')
+                    if wall_x > lower_bound and not self.table.table[wall_x+up_wall[0]][wall_y+first_right_neighbor[1]].is_blocking:
+                        self.table.table[wall_x][wall_y+second_right_neighbor[1]].del_limit('UL') 
+                    if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_right_neighbor[1]].is_blocking:
+                        self.table.table[wall_x][wall_y+second_right_neighbor[1]].del_limit('DL')
+            
+            if self.table.table[wall_x][wall_y+first_left_neighbor[1]].containing_ball:
+                if wall_y + first_left_neighbor[1] > lower_bound and not self.table.table[wall_x][wall_y+first_left_neighbor[1]+left_wall[1]].is_blocking and self.table.table[wall_x][wall_y+second_left_neighbor[1]].containing_ball:
+                    self.table.table[wall_x][wall_y+second_left_neighbor[1]].add_limit('RR')
+                    if wall_x > lower_bound and not self.table.table[wall_x+up_wall[0]][wall_y+first_left_neighbor[1]].is_blocking:
+                        self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('UR')
+                    if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_left_neighbor[1]].is_blocking:
+                        self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('DR')
+
