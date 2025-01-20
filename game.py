@@ -98,8 +98,8 @@ class Game:
         self.id=game_id
         self.table = Table() 
         self.is_finished = False
-        self.first_player = Player(user_1,0,8,16,"bold magenta")
-        self.second_player = Player(user_2,16,8,0,"bold bright_cyan")
+        self.first_player = Player(user_1,16,8,0,"bold magenta")
+        self.second_player = Player(user_2,0,8,16,"bold bright_cyan")
         self.turn = 0 
         self.time = 0
         self.moves = {'U' : (-2,0) , 'R' : (0,2) , 'D' : (2,0) , 'L' : (0,-2) , 'UU' : (-4,0) , 'RR' : (0,4) , 
@@ -355,8 +355,8 @@ class Game:
                             self.table.table[new_x+left_neighbor[0]][new_y+left_neighbor[1]].del_limit(opposite_direction*2)
 
     def complete_primary_table(self):
-        self.table.table[0][8].moving_ball_to(self.first_player.color)
-        self.table.table[16][8].moving_ball_to(self.second_player.color)
+        self.table.table[16][8].moving_ball_to(self.first_player.color)
+        self.table.table[0][8].moving_ball_to(self.second_player.color)
         for direction in ['U','R','D','L']:
             self.update_neighbors_ball_addition(0,8,direction)
             self.update_neighbors_ball_addition(16,8,direction)
@@ -368,6 +368,7 @@ class Game:
         down_wall = (1,0)
         right_wall = (0,1)
         left_wall = (0,-1)
+
         if direction == 'H':
             first_up_neighbor = (-1,0)
             second_up_neighbor = (-3,0)
@@ -388,7 +389,12 @@ class Game:
                     if wall_y < upper_bound and not self.table.table[wall_x+first_up_neighbor[0]][wall_y+right_wall[1]].is_blocking:
                         self.table.table[wall_x+second_up_neighbor[0]][wall_y].del_limit('DR')
                     if wall_y > lower_bound and not self.table.table[wall_x+first_up_neighbor[0]][wall_y+left_wall[1]].is_blocking:
-                        self.table.table[wall_x+second_up_neighbor[0]][wall_y].del_limit('DL:')
+                        self.table.table[wall_x+second_up_neighbor[0]][wall_y].del_limit('DL')
+                # fixing a bug
+                if wall_y < upper_bound:
+                    self.table.table[wall_x+first_up_neighbor[0]][wall_y+2].add_limit('DL')
+                if wall_y > lower_bound:
+                    self.table.table[wall_x+first_up_neighbor[0]][wall_y-2].add_limit('DR')
             
             if self.table.table[wall_x+first_down_neighbor[0]][wall_y].containing_ball:
                 if wall_x+first_down_neighbor[0] < upper_bound and not self.table.table[wall_x+first_down_neighbor[0]+down_wall[0]][wall_y].is_blocking and self.table.table[wall_x+second_down_neighbor[0]][wall_y].containing_ball:
@@ -397,11 +403,17 @@ class Game:
                         self.table.table[wall_x+second_down_neighbor[0]][wall_y].del_limit('UR')
                     if wall_y > lower_bound and not self.table.table[wall_x+first_down_neighbor[0]][wall_y+left_wall[1]].is_blocking:
                         self.table.table[wall_x+second_down_neighbor[0]][wall_y].del_limit('UL')
+                # fixing a bug 
+                if wall_y < upper_bound:
+                    self.table.table[wall_x+first_down_neighbor[0]][wall_y+2].add_limit('UL')
+                if wall_y > lower_bound:
+                    self.table.table[wall_x+first_down_neighbor[0]][wall_y-2].add_limit('UR')
         else:
             first_right_neighbor = (0,1)
             second_right_neighbor = (0,3)
             first_left_neighbor = (0,-1)
             second_left_neighbor = (0,-3)
+
             for move in self.table.table[wall_x][wall_y+first_right_neighbor[1]].neighbors.keys():
                 if 'L' in move:
                     self.table.table[wall_x][wall_y+first_right_neighbor[1]].add_limit(move)
@@ -417,6 +429,11 @@ class Game:
                         self.table.table[wall_x][wall_y+second_right_neighbor[1]].del_limit('UL') 
                     if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_right_neighbor[1]].is_blocking:
                         self.table.table[wall_x][wall_y+second_right_neighbor[1]].del_limit('DL')
+                # fixing a bug 
+                if wall_x < upper_bound:
+                    self.table.table[wall_x+2][wall_y+first_right_neighbor[1]].add_limit('UL')
+                if wall_x > lower_bound:
+                    self.table.table[wall_x-2][wall_y+first_right_neighbor[1]].add_limit('DL')
             
             if self.table.table[wall_x][wall_y+first_left_neighbor[1]].containing_ball:
                 if wall_y + first_left_neighbor[1] > lower_bound and not self.table.table[wall_x][wall_y+first_left_neighbor[1]+left_wall[1]].is_blocking and self.table.table[wall_x][wall_y+second_left_neighbor[1]].containing_ball:
@@ -425,6 +442,11 @@ class Game:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('UR')
                     if wall_x < upper_bound and not self.table.table[wall_x+down_wall[0]][wall_y+first_left_neighbor[1]].is_blocking:
                         self.table.table[wall_x][wall_y+second_left_neighbor[1]].del_limit('DR')
+                # fixing a bug 
+                if wall_x < upper_bound:
+                    self.table.table[wall_x+2][wall_y+first_left_neighbor[1]].add_limit('UR')
+                if wall_x > lower_bound:
+                    self.table.table[wall_x-2][wall_y+first_left_neighbor[1]].add_limit('DR')
 
     def wall_overlap_detection(self,x,y,direction):
         if x>1 and self.table.table[x-2][y].direction == direction and direction == 'V':
